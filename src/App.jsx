@@ -243,14 +243,35 @@ export default function App() {
 
   // ─── VICTORIA ──────────────────────────────────────────────
   if (phase === 'won' && winner) {
+    const winnerColor = PLAYER_COLORS[winner.id]
     return (
       <>
-        <Confetti count={100} />
+        <Confetti count={110} />
         <div className="fullscreen">
           <div className="win-card">
-            <h1>¡GANADOR!</h1>
+            <div className="win-stamp">★ ¡GANADOR! ★</div>
+            <div className="win-avatar-wrap">
+              <div
+                className="win-avatar-ring"
+                style={{ background: winnerColor }}
+              />
+              {winner.avatar ? (
+                <img
+                  src={winner.avatar}
+                  alt={winner.name}
+                  className="win-avatar"
+                  style={{ borderColor: winnerColor }}
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                />
+              ) : (
+                <div
+                  className="win-avatar"
+                  style={{ background: winnerColor, borderColor: winnerColor }}
+                />
+              )}
+            </div>
             <div className="winner">{winner.name}</div>
-            <div className="small">los 6 quesitos + final acertada</div>
+            <div className="small">★ los 6 quesitos · final acertada ★</div>
             <button className="btn-primary" onClick={startGame}>
               JUGAR DE NUEVO ↻
             </button>

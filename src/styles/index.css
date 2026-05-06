@@ -596,7 +596,7 @@ body::before {
   margin: 16px 0 24px;
 }
 
-/* Confetti / sparkles para victoria */
+/* Confetti / sparkles retro noventero para victoria */
 .confetti {
   position: fixed;
   inset: 0;
@@ -604,16 +604,70 @@ body::before {
   z-index: 60;
   overflow: hidden;
 }
-.confetti span {
+.confetti-piece {
   position: absolute;
-  top: -20px;
-  width: 12px;
-  height: 18px;
-  animation: fall linear forwards;
+  top: -40px;
+  display: block;
+  animation: fall90s linear forwards;
+  filter: drop-shadow(2px 2px 0 rgba(31, 27, 22, 0.4));
 }
-@keyframes fall {
-  0% { transform: translateY(-50px) rotate(0); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.85; }
+@keyframes fall90s {
+  0%   { transform: translate(0, -40px) rotate(0deg); opacity: 1; }
+  20%  { opacity: 1; }
+  100% { transform: translate(var(--drift, 0px), 110vh) rotate(900deg); opacity: 0.95; }
+}
+
+/* Avatar ganador */
+.win-avatar-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 16px auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-avatar-ring {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 4px dashed var(--ink);
+  animation: ring-spin 9s linear infinite;
+  opacity: 0.85;
+  /* el background del ring lo recibe el componente, lo recortamos a anillo */
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 62%);
+  mask: radial-gradient(circle, transparent 60%, #000 62%);
+}
+
+@keyframes ring-spin {
+  from { transform: rotate(0); }
+  to   { transform: rotate(360deg); }
+}
+
+.win-avatar {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink), 0 0 0 4px var(--cream) inset;
+  background: var(--paper);
+  z-index: 1;
+}
+
+.win-stamp {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  padding: 6px 14px;
+  border: 3px solid var(--ink);
+  background: var(--c-historia);
+  color: var(--ink);
+  transform: rotate(-3deg);
+  box-shadow: 3px 3px 0 var(--ink);
 }
 
 /* =============================================================
