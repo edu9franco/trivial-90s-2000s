@@ -57,6 +57,26 @@ export default function App() {
   const [result, setResult] = useState(null) // {kind: 'ok'|'bad'|'wedge', text}
   const [winner, setWinner] = useState(null)
 
+  // ─── Atajo de testing: ?win=guille | ?win=ana | ?win=edu ───
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const target = (params.get('win') || '').toLowerCase()
+    if (!target) return
+    const idx = PLAYER_NAMES.findIndex((n) => n.toLowerCase() === target)
+    if (idx === -1) return
+    const fakeWinner = {
+      ...PLAYER_NAMES.map((name, i) => ({
+        id: i,
+        name,
+        avatar: PLAYER_AVATARS[i],
+        position: 0,
+        wedges: CATEGORY_ORDER, // 6 quesitos para el visual
+      }))[idx],
+    }
+    setWinner(fakeWinner)
+    setPhase('won')
+  }, [])
+
   const player = players[currentPlayer]
 
   function startGame() {
