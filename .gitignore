@@ -1,0 +1,18 @@
+node_modules
+dist
+dist-ssr
+.vite
+.DS_Store
+*.local
+.env
+.env.local
+.vercel
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+vite.config.js.timestamp-*
+
+# Carpetas de trabajo locales (no se suben a GitHub)
+Foto Perfil Jugador/
+voy a hacer una app que sea igual al trivial. nece.md

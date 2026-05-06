@@ -1,0 +1,754 @@
+/* =============================================================
+   TRIVIAL 90s/2000s — Sistema de diseño "Vintage Y2K"
+   - Tipografía: Bungee (display) + Fraunces (preguntas) + DM Sans (UI)
+   - Paleta: cartón/pergamino + 6 colores oficiales del Trivial
+   - Texturas: grano de papel, sombras duras de packaging 90s
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&family=Press+Start+2P&display=swap');
+
+:root {
+  /* — Categorías Trivial — */
+  --c-geografia:        #1f8fff;
+  --c-geografia-dark:   #0e5fb3;
+  --c-entretenimiento:  #ff4ea1;
+  --c-entretenimiento-dark: #b8276f;
+  --c-historia:         #ffd400;
+  --c-historia-dark:    #b89200;
+  --c-arte:             #8b5a2b;
+  --c-arte-dark:        #5e3a18;
+  --c-ciencia:          #1faa4a;
+  --c-ciencia-dark:     #0e7531;
+  --c-deportes:         #ff8a1f;
+  --c-deportes-dark:    #b35a00;
+
+  /* — Sistema base — */
+  --paper:        #f5e9c8;
+  --paper-deep:   #ead7a3;
+  --ink:          #1f1b16;
+  --ink-soft:     #3a312a;
+  --cream:        #fff7e0;
+  --gold:         #c9a64c;
+
+  /* — Sombras de packaging 90s (duras, sin blur) — */
+  --shadow-hard:  4px 4px 0 var(--ink);
+  --shadow-hardL: 6px 6px 0 var(--ink);
+  --shadow-hardXL: 8px 8px 0 var(--ink);
+
+  /* — Tipografía — */
+  --font-display: 'Bungee', 'Impact', sans-serif;
+  --font-question: 'Fraunces', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-pixel:   'Press Start 2P', monospace;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 10%, #fff5cc 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, #ffe9b3 0%, transparent 40%),
+    var(--paper);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Textura de grano de papel — overlay sutil aplicado a body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.07  0 0 0 0.6 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+}
+
+#root {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* =============================================================
+   APP SHELL
+   ============================================================= */
+
+.app {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 14px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* =============================================================
+   HEADER
+   ============================================================= */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-title {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 6vw, 30px);
+  letter-spacing: 0.02em;
+  margin: 0;
+  line-height: 1;
+  color: var(--ink);
+  text-shadow: 3px 3px 0 var(--gold);
+}
+
+.app-title .subtitle {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  margin-top: 6px;
+  color: var(--ink-soft);
+  text-shadow: none;
+}
+
+.btn-reset {
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 11px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-reset:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* =============================================================
+   PLAYER HUD (tarjetas de jugadores con quesitos)
+   ============================================================= */
+
+.players {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.player-card {
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  padding: 10px 8px 8px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.player-card.active {
+  background: var(--ink);
+  color: var(--cream);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--gold);
+}
+
+.player-card .pname {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-card .pdot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.player-card.active .pdot {
+  border-color: var(--cream);
+}
+
+.wedges {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+  margin-top: 6px;
+}
+
+.wedge {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.player-card.active .wedge {
+  border-color: var(--cream);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.wedge.filled {
+  transform: scale(1.05) rotate(360deg);
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+  animation: pop 0.5s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1.05); }
+}
+
+/* =============================================================
+   BOARD
+   ============================================================= */
+
+.board-wrap {
+  background: var(--cream);
+  border: 4px solid var(--ink);
+  box-shadow: var(--shadow-hardL);
+  padding: 8px;
+  position: relative;
+}
+
+.board-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--ink-soft);
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.board {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* =============================================================
+   DICE & ACCIONES
+   ============================================================= */
+
+.action-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.turn-indicator {
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-align: center;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 8px 16px;
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  letter-spacing: 0.04em;
+}
+
+.turn-indicator .turn-name {
+  color: var(--gold);
+}
+
+.dice-button {
+  width: 96px;
+  height: 96px;
+  border: 4px solid var(--ink);
+  background: var(--cream);
+  box-shadow: var(--shadow-hardXL);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 50px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 16px;
+  position: relative;
+  user-select: none;
+}
+
+.dice-button:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0 var(--ink); }
+.dice-button:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0 var(--ink); }
+.dice-button.rolling {
+  animation: roll 0.6s linear;
+  pointer-events: none;
+}
+.dice-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes roll {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(180deg) scale(0.85); }
+  50%  { transform: rotate(360deg) scale(1.1); }
+  75%  { transform: rotate(540deg) scale(0.9); }
+  100% { transform: rotate(720deg) scale(1); }
+}
+
+.dice-label {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+/* Dots del dado */
+.dice-face {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 60%;
+  height: 60%;
+  gap: 4px;
+}
+.dice-face span {
+  background: var(--ink);
+  border-radius: 50%;
+  align-self: center;
+  justify-self: center;
+  width: 14px;
+  height: 14px;
+}
+
+/* =============================================================
+   QUESTION MODAL — flip-card vintage
+   ============================================================= */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 27, 22, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadein 0.25s ease;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.q-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--cream);
+  border: 5px solid var(--ink);
+  box-shadow: var(--shadow-hardXL);
+  padding: 0;
+  position: relative;
+  animation: cardflip 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+@keyframes cardflip {
+  0%   { opacity: 0; transform: perspective(900px) rotateY(-90deg) scale(0.8); }
+  100% { opacity: 1; transform: perspective(900px) rotateY(0deg) scale(1); }
+}
+
+.q-band {
+  padding: 10px 16px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 4px solid var(--ink);
+  color: var(--ink);
+  letter-spacing: 0.03em;
+}
+
+.q-band .cat-emoji { font-size: 22px; }
+
+.q-body {
+  padding: 18px 18px 16px;
+  font-family: var(--font-question);
+  font-weight: 600;
+  font-size: clamp(17px, 4.5vw, 21px);
+  line-height: 1.35;
+  color: var(--ink);
+  font-variation-settings: 'opsz' 30;
+}
+
+.q-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 16px 16px;
+}
+
+.q-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  line-height: 1.3;
+}
+
+.q-option:hover:not(:disabled) {
+  background: #fffbe9;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.q-option:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.q-option .letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.q-option.correct {
+  background: #d6f5dc;
+  border-color: var(--c-ciencia-dark);
+  box-shadow: 4px 4px 0 var(--c-ciencia-dark);
+}
+.q-option.correct .letter { background: var(--c-ciencia-dark); }
+
+.q-option.wrong {
+  background: #ffd9d9;
+  border-color: #b32020;
+  box-shadow: 4px 4px 0 #b32020;
+  animation: shake 0.4s ease;
+}
+.q-option.wrong .letter { background: #b32020; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.q-option:disabled { cursor: default; }
+
+.q-footer {
+  padding: 10px 16px 16px;
+  border-top: 3px dashed var(--ink-soft);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  font-family: var(--font-display);
+  background: var(--ink);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+.btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+
+/* =============================================================
+   ELEGIR CATEGORÍA (cuando caes en HUB con 6 quesitos)
+   ============================================================= */
+
+.cat-picker {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 4px 16px 16px;
+}
+
+.cat-pick-btn {
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 12px 8px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.cat-pick-btn .emoji { font-size: 28px; }
+.cat-pick-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+/* =============================================================
+   SETUP / WIN screens
+   ============================================================= */
+
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 20%, #fff5cc 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, #ffe9b3 0%, transparent 50%),
+    var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.win-card {
+  text-align: center;
+  background: var(--cream);
+  border: 5px solid var(--ink);
+  box-shadow: var(--shadow-hardXL);
+  padding: 32px 24px;
+  max-width: 440px;
+  position: relative;
+  animation: cardflip 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.win-card h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 8vw, 44px);
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+  text-shadow: 4px 4px 0 var(--gold);
+  line-height: 1;
+}
+
+.win-card .winner {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 12vw, 64px);
+  margin: 16px 0;
+  background: linear-gradient(45deg, var(--c-historia), var(--c-entretenimiento), var(--c-geografia));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.03em;
+  filter: drop-shadow(3px 3px 0 var(--ink));
+  line-height: 1;
+}
+
+.win-card .small {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  margin: 16px 0 24px;
+}
+
+/* Confetti / sparkles para victoria */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  overflow: hidden;
+}
+.confetti span {
+  position: absolute;
+  top: -20px;
+  width: 12px;
+  height: 18px;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  0% { transform: translateY(-50px) rotate(0); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.85; }
+}
+
+/* =============================================================
+   RESULT BANNER (acertaste / fallaste)
+   ============================================================= */
+
+.result-banner {
+  font-family: var(--font-display);
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  margin: 4px 16px 0;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.result-banner.ok  { background: #d6f5dc; color: var(--c-ciencia-dark); }
+.result-banner.bad { background: #ffd9d9; color: #b32020; }
+.result-banner.wedge { background: var(--c-historia); color: var(--ink); animation: glow 1.2s ease infinite alternate; }
+
+@keyframes glow {
+  from { box-shadow: 4px 4px 0 var(--ink); }
+  to { box-shadow: 4px 4px 0 var(--ink), 0 0 24px rgba(255, 212, 0, 0.8); }
+}
+
+/* =============================================================
+   SETUP SCREEN (hint cuando arranca)
+   ============================================================= */
+
+.intro-card {
+  text-align: center;
+  background: var(--cream);
+  border: 5px solid var(--ink);
+  box-shadow: var(--shadow-hardXL);
+  padding: 28px 24px;
+  max-width: 460px;
+}
+
+.intro-card h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 9vw, 44px);
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-shadow: 4px 4px 0 var(--gold);
+  line-height: 1;
+}
+
+.intro-card .stamp {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  padding: 6px 12px;
+  border: 2px solid var(--ink);
+  margin-top: 12px;
+  transform: rotate(-3deg);
+  background: var(--c-historia);
+  color: var(--ink);
+}
+
+.intro-card p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 18px 0;
+}
+
+.intro-players {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.intro-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.intro-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid;
+  box-shadow: 4px 4px 0 var(--ink);
+  background: var(--paper);
+}
+
+.intro-players .chip {
+  font-family: var(--font-display);
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  background: var(--cream);
+  letter-spacing: 0.04em;
+}
+
+/* Avatares dentro del HUD de jugadores */
+.player-card .pavatar {
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.player-card.active .pavatar {
+  box-shadow: 2px 2px 0 var(--gold);
+}
+
+/* =============================================================
+   FOOTER pequeño
+   ============================================================= */
+
+.app-footer {
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: var(--ink-soft);
+  padding: 8px 0 4px;
+  opacity: 0.7;
+}
+
+/* =============================================================
+   MEDIA QUERIES — pantallas grandes
+   ============================================================= */
+
+@media (min-width: 720px) {
+  .app { padding: 24px; gap: 18px; }
+  .app-title { font-size: 36px; }
+  .player-card .pname { font-size: 16px; }
+}
+
+@media (min-width: 980px) {
+  .app { max-width: 880px; }
+}
